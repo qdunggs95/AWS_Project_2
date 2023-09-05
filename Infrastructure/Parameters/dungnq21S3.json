@@ -1,0 +1,18 @@
+[
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "Udagram"
+    },
+    {
+        "ParameterKey": "S3BucketAppName",
+        "ParameterValue": "udagram-app-dungnq21"
+    },
+    {
+        "ParameterKey": "S3BucketKeyName",
+        "ParameterValue": "udagram-key-dungnq21"
+    },
+    {
+        "ParameterKey": "S3BucketLogsName",
+        "ParameterValue": "udagram-logs-dungnq21"
+    }
+]

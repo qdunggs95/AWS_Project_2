@@ -1,0 +1,150 @@
+Description: >
+  DungNQ21 | Udacity 2023
+  AWS-CloudFormation script to create a S3 bucket.
+
+############################### Parameters ################################
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names.
+    Type: String
+    Default: Udagram
+
+  S3BucketAppName:
+    Description: A Bucked name.
+    Type: String
+    Default: udagram-app-dungnq21
+
+  S3BucketKeyName:
+    Description: A Bucked name.
+    Type: String
+    Default: udagram-key-dungnq21
+
+  S3BucketLogsName:
+    Description: A Bucked name.
+    Type: String
+    Default: udagram-logs-dungnq21
+
+############################### Resources #################################
+Resources:
+  S3WebApp:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      BucketName: !Ref S3BucketAppName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+
+  S3WebAppPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3WebApp
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+            - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'S3WebApp', '/*']]
+            Principal: '*'
+
+  S3KeyPar:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      BucketName: !Ref S3BucketKeyName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+
+  S3KeyParPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3KeyPar
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowStaticObjectDownload
+            Action:
+            - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'S3KeyPar', '/*']]
+            Principal: '*'
+
+          - Sid: PutObjectAccess
+            Action:
+            - 's3:PutObject'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'S3KeyPar', '/*']]
+            Principal: '*'
+
+  S3Logs:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      BucketName: !Ref S3BucketLogsName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+
+  S3LogsPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Logs
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowStaticObjectDownload
+            Action:
+            - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'S3Logs', '/*']]
+            Principal: '*'
+
+          - Sid: PutObjectAccess
+            Action:
+            - 's3:PutObject'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref 'S3Logs', '/*']]
+            Principal: '*'
+
+############################### Outputs #################################
+Outputs:
+  S3WebAppURI:
+    Value: !Join ['', ['s3://', !Ref S3WebApp]]
+    Description: Secure URI for S3 WebApp
+    Export:
+      Name: !Sub ${EnvironmentName}-S3WebAppURI
+
+  S3KeyParURI:
+    Value: !Join ['', ['s3://', !Ref S3KeyPar]]
+    Description: Secure URI for S3 KeyPar
+    Export:
+      Name: !Sub ${EnvironmentName}-S3KeyParURI
+
+  S3LogsURI:
+    Value: !Join ['', ['s3://', !Ref S3Logs]]
+    Description: Secure URI for S3 Logs
+    Export:
+      Name: !Sub ${EnvironmentName}-S3LogsURI
+      
+  S3Logs:
+    Value: !Ref S3Logs
+    Description: Secure URI for S3 S3Logs
+    Export:
+      Name: !Sub ${EnvironmentName}-S3Logs
